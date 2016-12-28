@@ -12,6 +12,7 @@ from arcpy import env
 from arcpy.sa import *
 
 in_workspace = arcpy.GetParameterAsText(0)
+outrastername = arcpy.GetParameterAsText(1)
 
 env.workspace = in_workspace
 
@@ -33,8 +34,6 @@ arcpy.BuildPyramidsandStatistics_management(in_workspace, "NONE",
 
 lidarstnull = arcpy.ListRasters("*_stnull.tif")
 
-outrastername = arcpy.GetParameterAsText(1)
-
 outraster = outrastername + ".tif"
 
 arcpy.AddMessage("Mosaicking images...")
@@ -43,7 +42,9 @@ testraster = in_workspace + "/" + lidarstnull[0]
 
 pixelcode = arcpy.GetRasterProperties_management(testraster,"VALUETYPE")
 
-pixeldict = {'0':'1_BIT', '1':'2_BIT', '2':'4_BIT', '3':'8_BIT_UNSIGNED', '4':'8_BIT_SIGNED', '5':'16_BIT_UNSIGNED', '6':'16_BIT_SIGNED','7':'32_BIT_UNSIGNED','8':'32_BIT_SIGNED','9':'32_BIT_FLOAT','10':'64_BIT'}
+pixeldict = {'0':'1_BIT', '1':'2_BIT', '2':'4_BIT', '3':'8_BIT_UNSIGNED', '4':'8_BIT_SIGNED', 
+             '5':'16_BIT_UNSIGNED', '6':'16_BIT_SIGNED','7':'32_BIT_UNSIGNED','8':'32_BIT_SIGNED',
+             '9':'32_BIT_FLOAT','10':'64_BIT'}
 
 pixelcode = str(pixelcode)
 
