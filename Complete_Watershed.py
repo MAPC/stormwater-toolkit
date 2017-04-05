@@ -9,11 +9,14 @@
 #-------------------------------------------------------------------------------
 
 import arcpy
+import sys
 from arcpy import sa
 from arcpy.sa import *
 from arcpy import env
 
 # Get inputs
+
+
 
 workspace = arcpy.GetParameterAsText(0)
 
@@ -48,93 +51,101 @@ def AutoName(raster):
 
     return newname
 
-# fill sinks
 
-arcpy.AddMessage("Filling the sinks in the DEM...")
+try: 
+    # fill sinks
 
-fill = lidar + "_fill"
+    arcpy.AddMessage("Filling the sinks in the DEM...")
 
-fill = AutoName(fill)
+    fill = lidar + "_fill"
 
-outfill = fill
+    fill = AutoName(fill)
 
-fill = arcpy.sa.Fill(lidar)
+    outfill = fill
 
-message = "Saving filled DEM as " + outfill + "..."
+    fill = arcpy.sa.Fill(lidar)
 
-arcpy.AddMessage(message)
+    message = "Saving filled DEM as " + outfill + "..."
 
-fill.save(outfill)
+    arcpy.AddMessage(message)
 
-
-# create flow direction raster
-
-arcpy.AddMessage("Creating the flow direction raster...")
-
-flowdir = lidar + "_flwdir"
-
-flowdir = AutoName(flowdir)
-
-outflowdir = flowdir
-
-flowdir = arcpy.sa.FlowDirection(outfill,"NORMAL")
-
-message = "Saving flow direction raster as " + outflowdir + "..."
-
-arcpy.AddMessage(message)
-
-flowdir.save(outflowdir)
+    fill.save(outfill)
 
 
-# create flow accumulation raster
+    # create flow direction raster
 
-arcpy.AddMessage("Creating the flow accumulation raster. This may take a while...")
+    arcpy.AddMessage("Creating the flow direction raster...")
 
-flowacc = lidar + "_flwacc"
+    flowdir = lidar + "_flwdir"
 
-flowacc = AutoName(flowacc)
+    flowdir = AutoName(flowdir)
 
-outflowacc = flowacc
+    outflowdir = flowdir
 
-flowacc = arcpy.sa.FlowAccumulation(outflowdir)
+    flowdir = arcpy.sa.FlowDirection(outfill,"NORMAL")
 
-message = "Saving flow accumulation raster as " + outflowacc + "..."
+    message = "Saving flow direction raster as " + outflowdir + "..."
 
-arcpy.AddMessage(message)
+    arcpy.AddMessage(message)
 
-flowacc.save(outflowacc)
-
-
-# snap pour points
-
-arcpy.AddMessage("Snapping pour points...")
-
-snap = int(snap)
-
-pptsnap = pour + "_snp"
-
-pptsnap = AutoName(pptsnap)
-
-outppt = pptsnap
-
-pptsnap = arcpy.sa.SnapPourPoint(pour,outflowacc,snap,pptfield)
-
-message = "Saving pour point raster as " + outppt + "..."
-
-arcpy.AddMessage(message)
-
-pptsnap.save(outppt)
+    flowdir.save(outflowdir)
 
 
-# create watershed raster
+    # create flow accumulation raster
 
-arcpy.AddMessage("Creating watershed raster...")
+    arcpy.AddMessage("Creating the flow accumulation raster. This may take a while...")
 
-wtrshd = arcpy.sa.Watershed(outflowdir,outppt,"Value")
+    flowacc = lidar + "_flwacc"
 
-message ="Saving watershed output as " + outwtrshd + "..."
+    flowacc = AutoName(flowacc)
 
-wtrshd.save(outwtrshd)
+    outflowacc = flowacc
+
+    flowacc = arcpy.sa.FlowAccumulation(outflowdir)
+
+    message = "Saving flow accumulation raster as " + outflowacc + "..."
+
+    arcpy.AddMessage(message)
+
+    flowacc.save(outflowacc)
+
+
+    # snap pour points
+
+    arcpy.AddMessage("Snapping pour points...")
+
+    snap = int(snap)
+
+    pptsnap = pour + "_snp"
+
+    pptsnap = AutoName(pptsnap)
+
+    outppt = pptsnap
+
+    pptsnap = arcpy.sa.SnapPourPoint(pour,outflowacc,snap,pptfield)
+
+    message = "Saving pour point raster as " + outppt + "..."
+
+    arcpy.AddMessage(message)
+
+    pptsnap.save(outppt)
+
+
+    # create watershed raster
+
+    arcpy.AddMessage("Creating watershed raster...")
+
+    wtrshd = arcpy.sa.Watershed(outflowdir,outppt,"Value")
+
+    message ="Saving watershed output as " + outwtrshd + "..."
+
+    wtrshd.save(outwtrshd)
+    
+except Exception:
+    e = sys.exc_info()[1]
+    print(e.args[0])
+    arcpy.AddError(e.args[0])
+    
 
 
 
