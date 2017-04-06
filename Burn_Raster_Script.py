@@ -21,9 +21,9 @@ arcpy.AddMessage("     Setting Environment parameters...")
 arcpy.env.extent = lidar
 arcpy.env.snapRaster = lidar
 arcpy.env.cellSize = lidar
+arcpy.env.mask = lidar
 
 # get inputs
-
 vector = arcpy.GetParameterAsText(1)  # get vector
 burnval = arcpy.GetParameterAsText(2)  # get burn value
 outfile = arcpy.GetParameterAsText(3)  # get ouput file name
