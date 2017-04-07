@@ -22,13 +22,13 @@ pour = arcpy.GetParameterAsText(2)
 pptfield = arcpy.GetParameterAsText(3)
 snap = arcpy.GetParameterAsText(4)
 outwtrshd = arcpy.GetParameterAsText(5)
+outpoly = arcpy.GetParameterAsText(6)
 
 # set environment settings
 env.workspace = workspace
 
 # defines function that checks whether a raster exists and adds a
 # suffix to the output file name if it does.
-
 def AutoName(raster):
     checkraster = arcpy.Exists(raster) # checks to see if the raster already exists
     count = 2
@@ -104,6 +104,10 @@ try:
     wtrshd = arcpy.sa.Watershed(outflowdir,outppt,"Value")
     wtrshd.save(outwtrshd)
     
+    arcpy.AddMessage("Creating watershed vector...")
+    
+    arcpy.RasterToPolygon_conversion(outwtrshd,outpoly,"SIMPLIFY","VALUE")
+  
 except Exception:
     e = sys.exc_info()[1]
     print(e.args[0])
