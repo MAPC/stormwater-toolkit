@@ -107,6 +107,11 @@ try:
     arcpy.AddMessage("Creating watershed vector...")
     
     arcpy.RasterToPolygon_conversion(outwtrshd,outpoly,"SIMPLIFY","VALUE")
+    
+    # change gridcode field name to cbid_int
+    arcpy.AddField_management(outpoly,"cbid_int","SHORT")
+    arcpy.CalculateField_management(outpoly,"cbid_int","!gridcode!","PYTHON")
+    arcpy.DeleteField_management(outpoly,"gridcode")
   
 except Exception:
     e = sys.exc_info()[1]
