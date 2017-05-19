@@ -56,7 +56,10 @@ try:
     pixeltype = pixeldict.get(pixelcode)
     
     arcpy.MosaicToNewRaster_management(lidarstnull, in_workspace, outraster, "",pixeltype,"",cellsize,"FIRST", "FIRST")
-
+    
+    for raster in lidarstnull:
+        arcpy.Delete_management(raster)
+        
     arcpy.AddMessage("Mosaicked to new raster.")
 
 except Exception:

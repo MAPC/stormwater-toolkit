@@ -30,6 +30,8 @@ env.workspace = workspace
 # defines function that checks whether a raster exists and adds a
 # suffix to the output file name if it does.
 def AutoName(raster):
+    raster = raster.translate('', '!@#$%&*^?') # makes input name legal for ESRI GRID format
+    raster = raster.replace(' ','') 
     checkraster = arcpy.Exists(raster) # checks to see if the raster already exists
     count = 2
     newname = raster
