@@ -26,9 +26,9 @@ try:
 
     for file in lidarlist:
        outSetNull = arcpy.sa.SetNull(file, file, "VALUE < -1355")
-       outSetNull = arcpy.sa.SetNull(file,file, "VALUE > 29100")
+       outSetNull = arcpy.sa.SetNull(file,file, "VALUE > 29100") 
        outsplit = file.split(".")
-       outfilename = outsplit[0] + "_stnull" + ".tif"
+       outfilename = "stnull_" + outsplit[0] + ".tif"
        outfilepath = in_workspace + "/" + outfilename
        outSetNull.save(outfilepath)
 
@@ -36,7 +36,7 @@ try:
 
     arcpy.BuildPyramidsandStatistics_management(in_workspace, "NONE","BUILD_PYRAMIDS", "CALCULATE_STATISTICS" )
 
-    lidarstnull = arcpy.ListRasters("*_stnull.tif") # creates a list of rasters in the folder with _stnull suffix
+    lidarstnull = arcpy.ListRasters("stnull_*") # creates a list of rasters in the folder with _stnull suffix
     outraster = outrastername + ".tif"
 
     arcpy.AddMessage("Mosaicking images...")
