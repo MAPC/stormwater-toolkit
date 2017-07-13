@@ -69,6 +69,8 @@ try:
     arcpy.AddMessage("Saving results...")
 
     outcon.save(outfile)
+    
+    arcpy.Delete_management(newvector)
 
 except Exception:
     e = sys.exc_info()[1]
