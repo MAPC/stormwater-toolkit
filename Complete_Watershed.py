@@ -50,7 +50,7 @@ try:
     fill = lidar + "_fill"
     fill = AutoName(fill)
     outfill = fill
-    fill = arcpy.sa.Fill(lidar)
+    fill = arcpy.sa.Fill(lidar, 1)
 
     message = "Saving filled DEM as " + outfill + "..."
     arcpy.AddMessage(message)
