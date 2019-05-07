@@ -27,6 +27,82 @@ outpoly = arcpy.GetParameterAsText(6)
 # set environment settings
 env.workspace = workspace
 
+''' Checks to ensure proper data format- should not be necessary if 
+toolbox is set up correctly. '''
+
+# 1. Check that workspace is a geodatabase
+desc = arcpy.Describe(workspace)
+props = desc.connectionProperties
+db = props.database
+dbname = str(db)
+if dbname[-3:] == 'gdb':
+    pass
+else:
+    arcpy.AddMessage("Input workspace is not a geodatabase")
+    arcpy.AddMessage("Halting execution- data error")
+    sys.exit(0)
+    arcpy.AddMessage("Failed to halt execution")
+    
+# 2. Check that the LIDAR file and pour points passed to the file are both in the
+    # established workspace
+rasters = arcpy.ListRasters()
+featureclasses = arcpy.ListFeatureClasses()
+lidarname  = os.path.basename(lidar)
+if unicode(lidarname) in rasters:
+    pass
+else:
+    arcpy.AddMessage("LIDAR file is not raster or not in workspace")
+    arcpy.AddMessage(lidar)
+    arcpy.AddMessage("Halting execution- data error")
+    sys.exit(0)
+    arcpy.AddMessage("Failed to halt execution")
+
+pourname = os.path.basename(pour)
+if unicode(pourname) in featureclasses:
+    pass
+else:
+    arcpy.AddMessage("Pour point file is not feature class or not in workspace")
+    arcpy.AddMessage("Halting execution- data error")
+    sys.exit(0)
+    arcpy.AddMessage("Failed to halt execution")
+    
+    
+# 3. Files are not nested into group layer.
+    
+lidarpathname = lidar[:-len(lidarname)]
+if lidarpathname[:-1] == workspace or lidarname == lidar:
+    pass
+else:
+    arcpy.AddMessage("LIDAR image may be in a nested group layer. Please check and remove from group layer.")
+    arcpy.AddMessage("Halting execution- data error")
+    sys.exit(0)
+    arcpy.AddMessage("Failed to halt execution")
+    
+pourpathname = pour[:-len(pourname)]
+if pourpathname[:-1] == workspace or pourname == pour:
+    pass
+else:
+    arcpy.AddMessage("Pour point file may be in a nested group layer. Please check and remove from group layer.")
+    arcpy.AddMessage("Halting execution- data error")
+    sys.exit(0)
+    arcpy.AddMessage("Failed to halt execution")
+
+# 4. Snap point field is an integer
+fields = arcpy.ListFields(pour)
+for field in fields:
+    if field.name == pptfield:
+        if field.type not in ['Integer', 'SmallInteger']:
+            arcpy.AddMessage("Pour point field is not type 'Integer'")
+            arcpy.AddMessage("Halting execution- data error")
+            sys.exit(0)
+            arcpy.AddMessage("Failed to halt execution")
+        else:
+            pass
+    else:
+        pass
+    
+arcpy.AddMessage("Passed all data checks")
+
 # defines function that checks whether a raster exists and adds a
 # suffix to the output file name if it does.
 def AutoName(raster):
