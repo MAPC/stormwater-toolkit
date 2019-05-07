@@ -10,6 +10,7 @@
 
 import arcpy
 import sys
+import os
 from arcpy import sa
 from arcpy.sa import *
 from arcpy import env
